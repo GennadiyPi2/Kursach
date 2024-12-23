@@ -7,7 +7,7 @@
 * @brief Заголовочный файл для модуля ServerClientInterface
 */
 
-#pragma one
+#pragma once
 #include <sys/types.h>
 #include <iostream>
 #include <cstdlib>
@@ -40,7 +40,7 @@ using namespace std;
 class ServerClientInterface{
     public:
         int interaction(string database, string logFile);
-        uint64_t sum_vec();
+        uint32_t sum_vec();
 
         string get_address();
         void set_address(string address1);
@@ -48,8 +48,8 @@ class ServerClientInterface{
         int get_port();
         void set_port(int port1);
 
-        vector<uint64_t> get_vec();
-        void set_vec(vector<uint64_t> v);
+        vector<uint32_t> get_vec();
+        void set_vec(vector<uint32_t> v); // Изменено на uint32_t
 
         string get_salt();
         void set_salt();
@@ -60,8 +60,9 @@ class ServerClientInterface{
     private:
         string address;
         int port;
-        vector<uint64_t> vec;
+        vector<uint32_t> vec; // Изменено на uint32_t
         string salt;
-        pair<vector<string>, vector<string>>DB_clients;
+        pair<vector<string>, vector<string>> DB_clients;
         Errors Err;
 };
+

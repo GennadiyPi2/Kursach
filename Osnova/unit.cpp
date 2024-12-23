@@ -130,18 +130,29 @@ struct Server_fix {
     TEST_FIXTURE(Server_fix, ServerPortError){
         CHECK_THROW(s->set_address("104"), invalid_argument);
     }
-    // Перемножение элементов векторов
-    TEST_FIXTURE(Server_fix, VectorElementsMultiplication){
-		s->set_vec({5, 6, 7, 8});
-        auto resultat = s->sum_vec();
-        UNITTEST_CHECK_EQUAL(resultat, 26);
-    }
+    // Проверка нахождения среднего арифметического элементов векторов
+	TEST_FIXTURE(Server_fix, VectorElementsAverage) {
+    	s->set_vec({5, 6, 7, 8});
+    
+    // Получаем сумму элементов вектора
+    	auto sum = s->sum_vec();
+    
+    // Вычисляем количество элементов в векторе
+    	size_t vec_len = 4; // В данном случае у нас 4 элемента
+    
+    // Вычисляем среднее арифметическое
+    	double average = static_cast<double>(sum) / vec_len;
 
-    // Переполнение вверх при перемножении элементов векторов
+    // Проверяем, что среднее арифметическое равно ожидаемому значению
+    	UNITTEST_CHECK_EQUAL(average, 6.5); // Ожидаемое значение: (5 + 6 + 7 + 8) / 4 = 6.5
+	}
+
+
+    // Переполнение вверх при нахождении среднего арифметического элементов векторов
     TEST_FIXTURE(Server_fix, OverflowUpwardInVectorElementsMultiplication){
-        s->set_vec({9223372036854775807, 1});
+        s->set_vec({4294967295, 1});
         auto resultat = s->sum_vec();
-        UNITTEST_CHECK_EQUAL(resultat, 9223372036854775807);
+        UNITTEST_CHECK_EQUAL(resultat, 4294967295);
     }
 
 

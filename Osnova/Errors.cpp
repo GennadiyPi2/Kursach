@@ -14,18 +14,19 @@ string Errors::get_File_Log(){
 /**
 * @brief Сеттер для атрибута File_Log
 */
-void Errors::set_File_Log(string file){
-
+void Errors::set_File_Log(string file) {
     ifstream inputFile(file);
-
-    if (!inputFile.is_open()){
-        inputFile.close();
+    
+    if (!inputFile.is_open()) {
         error_recording("критичная", "Fun: set_File_Log. Файла с журналом ошибок открыть невозможно.");
-        
+        return; // Выход из функции, если файл не открыт
     }
-    inputFile.close();
-        File_Log = file;
+    
+    // Файл успешно открыт
+    File_Log = file;
+    inputFile.close(); // Закрываем файл
 }
+
 
 /**
 * @brief Функция сохранения ошибок в журнал

@@ -48,14 +48,14 @@ void ServerClientInterface::set_port(int port1){
 /**
 * @brief Сеттер для атрибута vec
 */
-vector<uint64_t> ServerClientInterface::get_vec(){
+vector<uint32_t> ServerClientInterface::get_vec(){
     return vec;
 }
 
 /**
 * @brief Геттер для атрибута vec
 */
-void ServerClientInterface::set_vec(vector<uint64_t> v){
+void ServerClientInterface::set_vec(vector<uint32_t> v){
     vec = v;
 }
 
@@ -108,13 +108,13 @@ void ServerClientInterface::set_DB_clients(vector<string> login, vector<string> 
 * @brief Функция вычисления суммы векторов
 * @return Возвращает сумму векторов атрибута vec
 */
-uint64_t ServerClientInterface::sum_vec(){
-    uint64_t sum = 0;
-    for (uint64_t value : vec) {
+uint32_t ServerClientInterface::sum_vec(){
+    uint32_t sum = 0;
+    for (uint32_t value : vec) {
         // Проверка на переполнение
-        if (sum > 9223372036854775807 - value) {
+        if (sum > 4294967295 - value) {
             // Обработка переполнения (в данном случае, просто возвращаем максимальное значение)
-            return 9223372036854775807;
+            return 4294967295;
         }
         
         sum += value;
@@ -241,42 +241,46 @@ int ServerClientInterface::interaction(string database, string logFile){
         send(clientSocket, buf, s4.length(), 0);
 
 
-        // Получение веторов
+        // Получение векторов
 
-        // Получение количества векторов
-        uint32_t col = 0;
-        recv(clientSocket, &col, sizeof(col), 0);
-        cout << "КОЛИЧЕСТВО ВЕКТОРОВ: " << col << endl;
+	// Получение количества векторов
+	uint32_t col = 0;
+	recv(clientSocket, &col, sizeof(col), 0);
+	cout << "КОЛИЧЕСТВО ВЕКТОРОВ: " << col << endl;
 
-        for(auto i = 0; i < col; i++){
+	for(auto i = 0; i < col; i++){
 
-            // Получение длины вектора
-            uint32_t vec_len = 0;
-            recv(clientSocket, &vec_len, sizeof(vec_len), 0);
-            cout << "ДЛИНА ВЕКТОРА: " << vec_len << endl;
+		// Получение длины вектора
+    		uint32_t vec_len = 0;
+    		recv(clientSocket, &vec_len, sizeof(vec_len), 0);
+    		cout << "ДЛИНА ВЕКТОРА: " << vec_len << endl;
 
-            // Получение вектора
-            uint64_t arr[vec_len] = {0};
+    		// Получение вектора
+    		uint32_t arr[vec_len] = {0};
 
-            recv(clientSocket, &arr, sizeof(arr), 0);
+    		recv(clientSocket, &arr, sizeof(arr), 0);
 
-            vector<uint64_t> vec1;
-            for (size_t j = 0; j < vec_len; j++) {
-            vec1.push_back(arr[j]);
-            cout << vec1[j] << " ";
-            }
-            cout << "\n";
+    		vector<uint32_t> vec1;
+    		for (size_t j = 0; j < vec_len; j++) {
+        		vec1.push_back(arr[j]);
+        		cout << vec1[j] << " ";
+    		}
+    		cout << "\n";
 
-            // Подсчет результатов
-            set_vec(vec1);
-            auto res = sum_vec();
-            cout << "РЕЗУЛЬТАТ ВЫЧИСЛЕНИЙ: " << res << endl;
+    		// Подсчет результатов
+    		set_vec(vec1);
+    		auto sum = sum_vec(); // Сумма элементов вектора
+    		cout << "СУММА ВЕКТОРА: " << sum << endl;
 
-            // Отправка результата
-            send(clientSocket, &res, sizeof(res), 0);
+    		// Вычисление среднего арифметического
+   		double average = static_cast<double>(sum) / vec_len; // Приведение к double для точного деления
+    		cout << "СРЕДНЕЕ АРИФМЕТИЧЕСКОЕ: " << average << endl;
+
+    		// Отправка результата
+    		send(clientSocket, &average, sizeof(average), 0); // Отправляем среднее арифметическое
+	}
 
 
-        }
         // Закрываем соединение с клиентом
         cout << "ЗАКРЫТИЕ СОКЕТА" << endl;
         close(clientSocket);
